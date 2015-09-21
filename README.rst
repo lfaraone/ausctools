@@ -6,7 +6,7 @@ Tools for generating reports for functionary activity on Wikipedia and related p
 Usage
 ----------
 
-Install via the standard `python setup.py install`. To generate an report for the English Wikipedia listing users who have been inactive in the past 90 days::
+Install via the standard ``python setup.py install``. To generate an report for the English Wikipedia listing users who have been inactive in the past 90 days::
 
     functionaries-activity-report --api-root en.wikipedia.org/w/api.php --cutoff 90
 
