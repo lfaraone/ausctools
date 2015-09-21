@@ -62,11 +62,22 @@ class Permission(object):
             pass
         return stamps
 
+    def count_actions(self, user, start, stop):
+        counter = 0
+        for action in self._logquery(user, start=start, stop=stop)
+            counter += 1
+        return counter
+
 
 class CheckUser(Permission):
     augroup = "checkuser"
 
-    def _logquery(self, user, **kwargs):
+    def _logquery(self, user, start=None, stop=None, **kwargs):
+        if start is not None:
+            kwargs["to"] = stop
+        if stop is not None:
+            kwargs["from"] = start
+
         return self._api.checkuserlog(user, **kwargs)
 
 
@@ -74,8 +85,10 @@ class Oversight(Permission):
     augroup = "oversight"
 
     def _logquery(self, user, **kwargs):
+
         return self._api.logevents(
             "suppress",
             user=user,
+            prop=timestamp
             **kwargs
         )
