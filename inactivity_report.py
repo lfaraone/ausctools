@@ -55,7 +55,13 @@ def exempt_users(conffile="excuses.yaml"):
     return exemptions_by_user
 
 
-def activity_report(api, permissions, cutoff_delta, stream=sys.stdout):
+def activity_report(
+        api,
+        permissions,
+        cutoff_delta,
+        mw_tables=False,
+        stream=sys.stdout,
+):
     """Generates and prints to stdout a report of inactive users
 
     Args:
@@ -65,11 +71,17 @@ def activity_report(api, permissions, cutoff_delta, stream=sys.stdout):
             objects) to check against.
         cutoff_delta (timedelta): Delta which will be subtracted from
             the current time to calculate the cutoff time for actions.
+        mw_tables (bool): Whether to use MediaWiki formatting in output.
         stream (Optional(file)): File object to which report output will be
             written.
     """
 
     log = root_logger.getChild("activity_report")
+
+    if mw_tables:
+        tablefmt = "mediawiki"
+    else:
+        tablefmt = "simple"
 
     now = datetime.now()
     activity_cutoff = now - cutoff_delta
@@ -152,6 +164,7 @@ def activity_report(api, permissions, cutoff_delta, stream=sys.stdout):
                 ) for user, actions in inactives
             ],
             headers=headers,
+            tablefmt=tablefmt,
         ), file=stream)
         # Newline between reports
         print(file=stream)
@@ -175,6 +188,9 @@ def setup_parser():
     parser.add_argument(
         "--api-root", type=str, default=DEFAULT_API_ROOT,
         help="API root to query")
+    parser.add_argument(
+        "--mw-table", action="store_true",
+        help="Output tables in MediaWiki format")
     parser.add_argument(
         "--cutoff", type=days_to_timedelta, default="90", metavar="DAYS",
         help="Number of days to use as a cutoff for inactivity")
@@ -205,4 +221,4 @@ def main(args=None):
     api = Site(("https", args.api_root), clients_useragent=USER_AGENT)
     api.login(username, password)
 
-    activity_report(api, (CheckUser, Oversight), args.cutoff)
+    activity_report(api, (CheckUser, Oversight), args.cutoff, mw_tables=args.mw_table)
