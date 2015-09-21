@@ -182,7 +182,11 @@ def setup_parser():
     return parser
 
 
-def main(args):
+def main(args=None):
+    if args is None:
+        parser = setup_parser()
+        args = parser.parse_args()
+
     # Configure logging to console, optionally including debug-level logs
 
     formatter = logging.Formatter(
@@ -202,7 +206,3 @@ def main(args):
     api.login(username, password)
 
     activity_report(api, (CheckUser, Oversight), args.cutoff)
-
-if __name__ == "__main__":
-    parser = setup_parser()
-    sys.exit(main(parser.parse_args()))
